@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+        "target": "ES6",
+        "checkJs": true,
+        "types": [
+            "node"
+         ],
+    },
+    "include": [
+        "./src/**/*",
+        "playground/**/*"
+    ]
+} 
