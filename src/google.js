@@ -1,9 +1,11 @@
 const axios = require('axios');
 
 module.exports = (apiKey) => {
+    const googleBaseURL = 'https://www.googleapis.com/youtube/v3';
+
     return {
         fetchLiveTopVideo: () => {
-            return axios.get('https://www.googleapis.com/youtube/v3/search', {
+            return axios.get(`${googleBaseURL}/search`, {
                 params: {
                     key: apiKey,
                     part: 'snippet',
@@ -24,7 +26,7 @@ module.exports = (apiKey) => {
             });
         },
         fetchLiveVideoAnalytic: (videoId) => {
-            return axios.get('https://www.googleapis.com/youtube/v3/videos', {
+            return axios.get(`${googleBaseURL}/videos`, {
                 params: {
                     key: apiKey,
                     id:  videoId,
@@ -39,6 +41,31 @@ module.exports = (apiKey) => {
                 return {
                     statistics: videoInfo.statistics,
                     liveStreamingDetails: videoInfo.liveStreamingDetails
+                };
+            });
+        },
+        fetchLiveChatMessages: (liveChatId) => {
+            return axios.get(`${googleBaseURL}/liveChat/messages`, {
+                params: {
+                    key: apiKey,
+                    liveChatId,
+                    part: 'snippet'
+                }
+            }).then(response => {
+                let messages = [];
+
+                response.data.items.forEach(item => {
+                    messages.push({
+                        author: item.snippet.liveChatId,
+                        publishedAt: item.snippet.publishedAt,
+                        displayMessage: item.snippet.displayMessage
+                    });
+                });
+
+                return {
+                    messages,
+                    nextCallIn: response.data.pollingIntervalMillis,
+                    nextPageToken: response.data.nextPageToken
                 };
             });
         }
